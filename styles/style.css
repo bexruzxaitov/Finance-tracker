@@ -160,6 +160,8 @@ body {
 }
 
 .header-actions {
+    position: relative;
+    z-index: 30;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -169,6 +171,14 @@ body {
 .custom-dd {
     position: relative;
     z-index: 20;
+}
+
+.custom-dd.open {
+    z-index: 80;
+}
+
+.header-actions .custom-dd.open {
+    z-index: 90;
 }
 
 .dd-trigger {
@@ -261,7 +271,7 @@ body {
     flex-direction: column;
     gap: 4px;
     animation: ddIn 0.18s ease;
-    z-index: 30;
+    z-index: 100;
 }
 
 .dd-menu[hidden] {
