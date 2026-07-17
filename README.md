@@ -28,12 +28,7 @@ Finance-tracker/
 └── README.md
 How to Run
 No separate server is required — simply open the index.html file in your browser.
-Alternatively, you can use a local server:
 
-Bash
-# Using Python
-python -m http.server 8000
-# Then access in your browser: http://localhost:8000
 Libraries (CDN)
 Chart.js — for Pie chart.
 
