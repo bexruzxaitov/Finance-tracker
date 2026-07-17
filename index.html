@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Moliyaviy boshqaruv | Finance Tracker</title>
+
+    <!-- FontAwesome ikonkalar -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- Excel (SheetJS) -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+    <!-- PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+    <link rel="stylesheet" href="styles/style.css?v=dd-scroll" />
+</head>
+<body>
+    <div class="app">
+        <!-- ===== Sarlavha ===== -->
+        <header class="header">
+            <div class="brand">
+                <span class="logo"><i class="fa-solid fa-wallet"></i></span>
+                <div>
+                    <h1 data-i18n="appTitle">Moliyaviy boshqaruv</h1>
+                    <p class="subtitle" data-i18n="appSubtitle">Daromad va xarajatlaringizni kuzating</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <!-- Til tanlash (custom dropdown) -->
+                <div class="custom-dd" id="langDropdown">
+                    <button type="button" class="dd-trigger dd-trigger-lang" id="langTrigger" aria-haspopup="listbox" aria-expanded="false">
+                        <span class="dd-current" id="langCurrent">
+                            <i class="fa-solid fa-globe"></i>
+                            <strong>UZ</strong>
+                        </span>
+                        <i class="fa-solid fa-chevron-down dd-caret"></i>
+                    </button>
+                    <div class="dd-menu" role="listbox" hidden>
+                        <button type="button" class="dd-item" data-value="uz" role="option">
+                            <span class="dd-flag">🇺🇿</span> <strong>UZ</strong>
+                            <span class="dd-sub">O'zbek</span>
+                        </button>
+                        <button type="button" class="dd-item" data-value="ru" role="option">
+                            <span class="dd-flag">🇷🇺</span> <strong>RU</strong>
+                            <span class="dd-sub">Русский</span>
+                        </button>
+                        <button type="button" class="dd-item" data-value="en" role="option">
+                            <span class="dd-flag">🇬🇧</span> <strong>EN</strong>
+                            <span class="dd-sub">English</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Valyuta tanlash (custom dropdown) -->
+                <div class="custom-dd" id="currencyDropdown">
+                    <button type="button" class="dd-trigger dd-trigger-currency" id="currencyTrigger" aria-haspopup="listbox" aria-expanded="false">
+                        <span class="dd-current" id="currencyCurrent">
+                            <i class="fa-solid fa-coins"></i>
+                            <strong data-i18n="currencyNameUZS">So'm</strong>
+                        </span>
+                        <i class="fa-solid fa-chevron-down dd-caret"></i>
+                    </button>
+                    <div class="dd-menu" role="listbox" hidden>
+                        <button type="button" class="dd-item" data-value="UZS" role="option">
+                            <i class="fa-solid fa-coins dd-ico uzs"></i>
+                            <strong data-i18n="currencyNameUZS">So'm</strong>
+                        </button>
+                        <button type="button" class="dd-item" data-value="USD" role="option">
+                            <i class="fa-solid fa-dollar-sign dd-ico usd"></i>
+                            <strong data-i18n="currencyNameUSD">Dollar</strong>
+                        </button>
+                        <button type="button" class="dd-item" data-value="RUB" role="option">
+                            <span class="dd-ico rub">₽</span>
+                            <strong data-i18n="currencyNameRUB">Rubl</strong>
+                        </button>
+                    </div>
+                </div>
+
+                <button id="themeToggle" class="icon-btn icon-btn-theme" type="button" data-i18n-title="themeTitle" title="Dark / Light">
+                    <i class="fa-solid fa-sun"></i>
+                </button>
+
+                <!-- Hisobot eksport -->
+                <div class="custom-dd" id="exportDropdown">
+                    <button type="button" class="dd-trigger dd-trigger-export icon-like" id="exportTrigger" aria-haspopup="listbox" aria-expanded="false" data-i18n-title="reportTitle" title="Export report">
+                        <span class="dd-current">
+                            <i class="fa-solid fa-file-export"></i>
+                            <strong data-i18n="exportReport">Hisobot</strong>
+                        </span>
+                        <i class="fa-solid fa-chevron-down dd-caret"></i>
+                    </button>
+                    <div class="dd-menu" role="listbox" hidden>
+                        <button type="button" class="dd-item" data-export="excel" role="option">
+                            <i class="fa-solid fa-file-excel dd-ico usd"></i>
+                            <strong data-i18n="exportExcel">Excel</strong>
+                        </button>
+                        <button type="button" class="dd-item" data-export="pdf" role="option">
+                            <i class="fa-solid fa-file-pdf dd-ico rub"></i>
+                            <strong data-i18n="exportPdf">PDF</strong>
+                        </button>
+                        <button type="button" class="dd-item" data-export="csv" role="option">
+                            <i class="fa-solid fa-file-csv dd-ico uzs"></i>
+                            <strong data-i18n="exportCsv">CSV</strong>
+                        </button>
+                    </div>
+                </div>
+
+                <button id="openModalBtn" class="btn btn-primary" type="button">
+                    <i class="fa-solid fa-plus"></i> <span data-i18n="newTx">Yangi tranzaksiya</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ===== Statistika kartalari ===== -->
+        <section class="stats">
+            <article class="stat-card income">
+                <div class="stat-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                <div class="stat-info">
+                    <span class="stat-label" data-i18n="income">Kirim</span>
+                    <span id="totalIncome" class="stat-value">0 so'm</span>
+                </div>
+            </article>
+
+            <article class="stat-card expense">
+                <div class="stat-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
+                <div class="stat-info">
+                    <span class="stat-label" data-i18n="expense">Chiqim</span>
+                    <span id="totalExpense" class="stat-value">0 so'm</span>
+                </div>
+            </article>
+
+            <article class="stat-card balance">
+                <div class="stat-top">
+                    <div class="stat-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-label" data-i18n="balance">Qolgan pul</span>
+                        <span id="balance" class="stat-value">0 so'm</span>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <span id="progressLabel" class="progress-label">Xarajat: 0%</span>
+            </article>
+        </section>
+
+        <!-- ===== Tranzaksiyalar + oylik trend (yuqori) ===== -->
+        <div class="main-grid">
+            <section class="panel table-panel">
+                <div class="panel-head">
+                    <h2 class="panel-title">
+                        <i class="fa-solid fa-list"></i> <span data-i18n="transactions">Tranzaksiyalar</span>
+                    </h2>
+
+                    <div class="toolbar">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input
+                                type="text"
+                                id="searchInput"
+                                data-i18n-placeholder="searchPlaceholder"
+                                placeholder="Tavsif yoki toifa bo'yicha qidirish..."
+                                autocomplete="off"
+                            />
+                        </div>
+                        <div class="custom-dd dd-compact" id="monthDropdown">
+                            <button type="button" class="dd-trigger dd-trigger-filter" id="monthTrigger" aria-haspopup="listbox" aria-expanded="false" data-i18n-aria="monthFilter" aria-label="Oy filtri">
+                                <span class="dd-current" id="monthCurrent">
+                                    <i class="fa-solid fa-calendar-days"></i>
+                                    <strong id="monthLabel" data-i18n="allMonths">Barcha oylar</strong>
+                                </span>
+                                <i class="fa-solid fa-chevron-down dd-caret"></i>
+                            </button>
+                            <div class="dd-menu" id="monthMenu" role="listbox" hidden>
+                                <button type="button" class="dd-item active" data-value="all" role="option">
+                                    <strong data-i18n="allMonths">Barcha oylar</strong>
+                                </button>
+                                <button type="button" class="dd-item" data-value="0" role="option"><strong data-i18n="m0">Yanvar</strong></button>
+                                <button type="button" class="dd-item" data-value="1" role="option"><strong data-i18n="m1">Fevral</strong></button>
+                                <button type="button" class="dd-item" data-value="2" role="option"><strong data-i18n="m2">Mart</strong></button>
+                                <button type="button" class="dd-item" data-value="3" role="option"><strong data-i18n="m3">Aprel</strong></button>
+                                <button type="button" class="dd-item" data-value="4" role="option"><strong data-i18n="m4">May</strong></button>
+                                <button type="button" class="dd-item" data-value="5" role="option"><strong data-i18n="m5">Iyun</strong></button>
+                                <button type="button" class="dd-item" data-value="6" role="option"><strong data-i18n="m6">Iyul</strong></button>
+                                <button type="button" class="dd-item" data-value="7" role="option"><strong data-i18n="m7">Avgust</strong></button>
+                                <button type="button" class="dd-item" data-value="8" role="option"><strong data-i18n="m8">Sentabr</strong></button>
+                                <button type="button" class="dd-item" data-value="9" role="option"><strong data-i18n="m9">Oktabr</strong></button>
+                                <button type="button" class="dd-item" data-value="10" role="option"><strong data-i18n="m10">Noyabr</strong></button>
+                                <button type="button" class="dd-item" data-value="11" role="option"><strong data-i18n="m11">Dekabr</strong></button>
+                            </div>
+                        </div>
+                        <div class="filters" id="filters">
+                            <button class="filter-btn active" data-filter="all" type="button" data-i18n="filterAll">Hammasi</button>
+                            <button class="filter-btn" data-filter="income" type="button" data-i18n="income">Kirim</button>
+                            <button class="filter-btn" data-filter="expense" type="button" data-i18n="expense">Chiqim</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-wrapper is-empty" id="tableWrapper">
+                    <table class="tx-table">
+                        <thead>
+                            <tr>
+                                <th data-i18n="colDesc">Tavsif</th>
+                                <th data-i18n="colCategory">Toifa</th>
+                                <th data-i18n="colPayment">To'lov usuli</th>
+                                <th data-i18n="colAmount">Summa</th>
+                                <th data-i18n="colDate">Sana</th>
+                                <th class="col-action"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionBody"></tbody>
+                    </table>
+
+                    <div id="emptyState" class="empty-state">
+                        <i class="fa-solid fa-inbox"></i>
+                        <p class="empty-title" data-i18n="emptyTitle">Hozircha tranzaksiyalar yo'q</p>
+                        <p class="empty-sub" data-i18n="emptySub">Yangisini qo'shing</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel trend-panel">
+                <div class="panel-head-row trend-head">
+                    <h2 class="panel-title">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span data-i18n="trendTitle">Oylik trend</span>
+                    </h2>
+                    <div class="custom-dd dd-compact" id="trendYearDropdown">
+                        <button type="button" class="dd-trigger dd-trigger-filter" id="trendYearTrigger" aria-haspopup="listbox" aria-expanded="false">
+                            <span class="dd-current" id="trendYearCurrent">
+                                <i class="fa-solid fa-calendar"></i>
+                                <strong id="trendYearLabel">2026</strong>
+                            </span>
+                            <i class="fa-solid fa-chevron-down dd-caret"></i>
+                        </button>
+                        <div class="dd-menu" id="trendYearMenu" role="listbox" hidden></div>
+                    </div>
+                </div>
+                <div class="chart-wrapper line-chart-wrap">
+                    <canvas id="lineChart"></canvas>
+                    <p id="lineChartEmpty" class="chart-empty" data-i18n="trendEmpty">Trend uchun ma'lumot yo'q</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- ===== Budget + Pie chart (past) ===== -->
+        <div class="analytics-grid">
+            <section class="panel budget-panel">
+                <div class="panel-head-row">
+                    <h2 class="panel-title">
+                        <i class="fa-solid fa-piggy-bank"></i>
+                        <span data-i18n="budgetTitle">Byudjet limitlari</span>
+                    </h2>
+                    <p class="panel-hint" data-i18n="budgetHint">Har bir toifa uchun oylik limit belgilang</p>
+                </div>
+                <div class="budget-add">
+                    <input
+                        type="text"
+                        id="budgetCatInput"
+                        data-i18n-placeholder="newCatPlaceholder"
+                        placeholder="Yangi toifa nomi..."
+                        autocomplete="off"
+                        maxlength="24"
+                    />
+                    <button type="button" class="budget-add-btn" id="budgetCatAddBtn">
+                        <i class="fa-solid fa-plus"></i>
+                        <span data-i18n="budgetAddCat">Toifa qo'shish</span>
+                    </button>
+                </div>
+                <div class="budget-scroll-shell" id="budgetScrollShell">
+                    <div id="budgetList" class="budget-list"></div>
+                    <div class="custom-scrollbar" id="budgetScrollbar" aria-hidden="true">
+                        <div class="custom-scrollbar-thumb" id="budgetScrollThumb"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel chart-panel">
+                <h2 class="panel-title">
+                    <i class="fa-solid fa-chart-pie"></i> <span data-i18n="chartTitle">Toifalar bo'yicha xarajat</span>
+                </h2>
+                <div class="chart-wrapper">
+                    <canvas id="pieChart"></canvas>
+                    <p id="chartEmpty" class="chart-empty" data-i18n="chartEmpty">Xarajatlar uchun ma'lumot yo'q</p>
+                </div>
+            </section>
+        </div>
+
+        <footer class="panel footer-panel">
+            <span class="footer-icon" aria-hidden="true">
+                <i class="fa-solid fa-shield-halved"></i>
+            </span>
+            <div class="footer-text">
+                <p class="footer-title" data-i18n="footerTitle">Ma'lumotlaringiz xavfsiz saqlanadi</p>
+                <p class="footer-sub" data-i18n="footer">Barcha yozuvlar faqat brauzeringizda (LocalStorage) qoladi — serverga yuborilmaydi.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ===== Modal: yangi tranzaksiya ===== -->
+    <div class="modal-overlay" id="modalOverlay" aria-hidden="true">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="modal-head">
+                <h3 id="modalTitle">
+                    <i class="fa-solid fa-plus" id="modalTitleIcon"></i>
+                    <span id="modalTitleText" data-i18n="modalNew">Yangi tranzaksiya</span>
+                </h3>
+                <button class="modal-close" id="closeModalBtn" data-i18n-aria="close" aria-label="Yopish">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="transactionForm" novalidate>
+                <div class="form-group">
+                    <label for="description" data-i18n="colDesc">Tavsif</label>
+                    <input
+                        type="text"
+                        id="description"
+                        placeholder="Masalan: Do'kondan non oldim"
+                        autocomplete="off"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="quickCat">Tezkor toifa tanlash</label>
+                    <div class="quick-cats" id="quickCats"></div>
+                    <div class="add-cat-form" id="addCatForm" hidden>
+                        <input
+                            type="text"
+                            id="newCatInput"
+                            data-i18n-placeholder="newCatPlaceholder"
+                            placeholder="Yangi toifa nomi..."
+                            autocomplete="off"
+                            maxlength="24"
+                        />
+                        <button type="button" class="btn-mini confirm" id="confirmCatBtn" data-i18n-aria="add" aria-label="Qo'shish">
+                            <i class="fa-solid fa-check"></i>
+                        </button>
+                        <button type="button" class="btn-mini cancel" id="cancelCatBtn" data-i18n-aria="cancel" aria-label="Bekor qilish">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="category" data-i18n="colCategory">Toifa</label>
+                        <select id="category"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="paymentMethod" data-i18n="colPayment">To'lov usuli</label>
+                        <select id="paymentMethod">
+                            <option value="Naqd" data-i18n="payCash">Naqd</option>
+                            <option value="Karta" data-i18n="payCard">Karta</option>
+                            <option value="O'tkazma" data-i18n="payTransfer">O'tkazma</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="amount" data-i18n="amountLabel">Summa (so'm)</label>
+                        <input
+                            type="number"
+                            id="amount"
+                            data-i18n-placeholder="amountPlaceholder"
+                            placeholder="Masalan: 500000"
+                            step="0.01"
+                        />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date" data-i18n="colDate">Sana</label>
+                        <input type="date" id="date" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="quick-amounts" id="quickAmounts">
+                        <button type="button" class="quick-btn" data-amount="10000">+10 000</button>
+                        <button type="button" class="quick-btn" data-amount="50000">+50 000</button>
+                        <button type="button" class="quick-btn" data-amount="100000">+100 000</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="typeLabel">Turi</label>
+                    <div class="type-toggle">
+                        <label class="type-option income-option">
+                            <input type="radio" name="type" value="income" checked />
+                            <span data-i18n="income">Kirim</span>
+                        </label>
+                        <label class="type-option expense-option">
+                            <input type="radio" name="type" value="expense" />
+                            <span data-i18n="expense">Chiqim</span>
+                        </label>
+                    </div>
+                </div>
+
+                <p id="errorMsg" class="error-msg" role="alert"></p>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-ghost" id="cancelBtn" data-i18n="cancel">
+                        Bekor qilish
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="saveBtn">
+                        <i class="fa-solid fa-check"></i> <span id="saveBtnText" data-i18n="save">Saqlash</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast bildirishnomalar -->
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
