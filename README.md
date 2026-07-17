@@ -1,44 +1,42 @@
-# Moliyaviy boshqaruv (Finance Tracker)
+Finance Tracker
+A modern, responsive web application built with pure HTML, CSS, and JavaScript for tracking income and expenses.
 
-Daromad va xarajatlarni kuzatish uchun sof HTML, CSS va JavaScript'da yozilgan zamonaviy, responsive veb-ilova.
+Features
+✅ Add income and expenses.
 
-## Imkoniyatlar
+✅ Real-time automatic balance calculation (positive — green, negative — red).
 
-- ✅ Daromad va xarajat qo'shish
-- ✅ Balansni real vaqtda avtomatik hisoblash (ijobiy — yashil, manfiy — qizil)
-- ✅ Xatolarni tekshirish (bo'sh maydon yoki noto'g'ri son)
-- ✅ Ma'lumotlarni `localStorage` orqali saqlash (sahifa yangilansa ham yo'qolmaydi)
-- ✅ Tranzaksiyalarni o'chirish
-- ✅ **BONUS:** Filtr — Hammasi / Daromad / Xarajat
-- ✅ **BONUS:** Chart.js yordamida Pie chart (daromad/xarajat nisbati)
-- ✅ Responsive dizayn (Flexbox + Grid), FontAwesome ikonkalar
+✅ Error validation (prevents empty fields or invalid numbers).
 
-## Fayl tuzilmasi
+✅ Data persistence using localStorage (data is saved even after refreshing the page).
 
-```
+✅ Delete transactions.
+
+✅ BONUS: Filter functionality — All / Income / Expense.
+
+✅ BONUS: Pie chart using Chart.js to visualize income/expense ratio.
+
+✅ Responsive design (Flexbox + Grid), FontAwesome icons.
+
+File Structure
+Plaintext
 Finance-tracker/
-├── index.html          # HTML5 struktura
+├── index.html          # HTML5 structure
 ├── styles/
-│   └── style.css       # Zamonaviy, responsive dizayn
-├── app.js              # Barcha mantiq
+│   └── style.css       # Modern, responsive design
+├── app.js              # All application logic
 └── README.md
-```
+How to Run
+No separate server is required — simply open the index.html file in your browser.
+Alternatively, you can use a local server:
 
-## Ishga tushirish
-
-Alohida server kerak emas — `index.html` faylini brauzerda ochish kifoya.
-
-Yoki oddiy lokal server bilan:
-
-```bash
-# Python bilan
+Bash
+# Using Python
 python -m http.server 8000
-# keyin brauzerda: http://localhost:8000
-```
+# Then access in your browser: http://localhost:8000
+Libraries (CDN)
+Chart.js — for Pie chart.
 
-## Kutubxonalar (CDN)
+FontAwesome — for icons.
 
-- [Chart.js](https://www.chartjs.org/) — Pie chart uchun
-- [FontAwesome](https://fontawesome.com/) — ikonkalar uchun
-
-> Eslatma: CDN'lar internet ulanishini talab qiladi.
+Note: CDNs require an internet connection.
